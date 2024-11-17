@@ -1,0 +1,8 @@
+Követelmények:
+    - Legyen benne kivételkezelés (try-catch)
+    - Legalább a képenyõre írjon ki hibaüzeneteket
+    (Ezek közül egy kihagyható:)
+    - Adat olvasása fájlból szerializáció segítségével (pl.: Adat betöltés és/vagy mentés JSON/XML fájlból/fájlba)
+    - Legyen benne saját immutable type (pl.: record class)
+    - Legyen benne LINQ segítségével: szûrés (where), csoportosítás (group by), rendezés (order by), agregáció (Pl.: Min(), Max(), First(), FirstOrDefault, Average(), stb...) közül legalább kettõ
+    - Legyen benne generikus kollekció (pl.: List, Stack, stb...)

@@ -1,18 +1,13 @@
-﻿using PQ7I00.APP.Spendings;
-using PQ7I00.Models.Spendings;
+﻿using PQ7I00.APP.Model.Spendings;
+using PQ7I00.Persistence;
 
 namespace PQ7I00.Repositories.Spendings
 {
-    public class SpendingRepository : ISpendingRepository
+    internal class SpendingRepository : ISpendingRepository
     {
-        public Task AddAsync(Spending spending)
+        public async Task AddAsync(Spending spending)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Spending> FindAsync()
-        {
-            throw new NotImplementedException();
+            await FileManager.AddSpendingAsync(spending);
         }
     }
 }
