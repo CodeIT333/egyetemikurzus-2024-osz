@@ -1,5 +1,6 @@
-﻿using PQ7I00.APP.Model.Spendings.DTOs;
-using PQ7I00.APP.Service.Spendings;
+﻿using PQ7I00.APP.Model.Spendings;
+using PQ7I00.APP.Model.Spendings.DTOs;
+using PQ7I00.APP.Application.Spendings;
 using PQ7I00.Shared;
 
 namespace PQ7I00.API.Spendings
@@ -13,9 +14,36 @@ namespace PQ7I00.API.Spendings
             _spendingService = spendingService;
         }
 
+        public async Task<List<SpendingDTO>> ListSpendingsByCategoryAsync()
+        {
+            Console.WriteLine("List spendings by category.");
+
+            Console.WriteLine("Select a category.");
+            foreach (var category in Enum.GetValues(typeof(CostCategory)))
+            {
+                Console.WriteLine($"{category}: {(int)category}");
+            }
+            CostCategory costCategory;
+            while (true)
+            {
+                if (int.TryParse(Console.ReadLine(), out int categoryValue) && Enum.IsDefined(typeof(CostCategory), categoryValue))
+                {
+                    costCategory = (CostCategory)categoryValue;
+                    break;
+                }
+
+                Console.WriteLine("Invalid input. Please select a valid category number.");
+            }
+
+            var spendings = await _spendingService.ListSpendingsByCategoriesAsync(costCategory);
+
+            if (!spendings.Any()) Console.WriteLine("No Spendings yet.");
+
+            return spendings;
+        }
+
         public async Task AddSpendingAsync()
         {
-            // TODO: create a console form
             Console.WriteLine("Create a new spending.");
 
             Console.Write("Spending name: ");
@@ -62,12 +90,12 @@ namespace PQ7I00.API.Spendings
             string comment = Console.ReadLine() ?? string.Empty;
 
 
-            SpendingCreateDTO dto = new()
+            SpendingDTO dto = new()
             {
-                Name = name,
-                AmountInHUF = amountInHUF,
-                Category = costCategory,
-                Comment = comment
+                name = name,
+                amountInHUF = amountInHUF,
+                category = costCategory,
+                comment = comment
             };
 
             await _spendingService.AddSpendingAsync(dto);

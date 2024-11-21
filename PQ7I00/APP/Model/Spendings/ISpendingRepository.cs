@@ -1,7 +1,10 @@
-﻿namespace PQ7I00.APP.Model.Spendings
+﻿using PQ7I00.Shared;
+
+namespace PQ7I00.APP.Model.Spendings
 {
     public interface ISpendingRepository
     {
-        public Task AddAsync(Spending spending);
+        Task<List<Spending>> ListByCategoryAsync(CostCategory costCategory);
+        Task AddAsync(Spending spending);
     }
 }

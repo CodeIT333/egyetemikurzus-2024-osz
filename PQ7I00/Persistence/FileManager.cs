@@ -1,4 +1,5 @@
 ﻿using PQ7I00.APP.Model.Spendings;
+using PQ7I00.Shared;
 
 namespace PQ7I00.Persistence
 {
@@ -9,6 +10,26 @@ namespace PQ7I00.Persistence
 
         // Combine with the relative path to get the DataFiles/Spendings directory
         private static readonly string SpendingsDirectory = Path.Combine(ProjectRootDirectory, "DataFiles", "Spendings");
+
+        public static async Task<List<Spending>> ListByCategoryAsync(CostCategory costCategory)
+        {
+            if (!Directory.Exists(SpendingsDirectory))
+            {
+                return new();
+            }
+
+            var files = Directory.GetFiles(SpendingsDirectory, "*.json");
+
+            var tasks = files.Select(async file => System.Text.Json.JsonSerializer.Deserialize<Spending>(await File.ReadAllTextAsync(file)));
+
+            var spendings = (await Task.WhenAll(tasks))
+                .Where(spending => spending.Category == costCategory)
+                .OrderBy(spending => spending.Date)
+                .ToList();
+
+            return spendings;
+
+        }
 
         public static async Task AddSpendingAsync(Spending spending)
         {

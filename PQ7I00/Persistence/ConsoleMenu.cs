@@ -1,8 +1,10 @@
-﻿namespace PQ7I00.Persistence
+﻿using PQ7I00.APP.Model.Spendings.DTOs;
+
+namespace PQ7I00.Persistence
 {
     public static class ConsoleMenu
     {
-        // add | list by categories | list by date (week, mounth, 1 year, 5 years)
+        // TODO: add | list by categories | list by date (week, mounth, 1 year, 5 years)
         
         public static int Menu()
         {
@@ -24,6 +26,19 @@
             }
 
             return selectedAction;
+        }
+
+        public static void List(List<SpendingDTO> spendings)
+        {
+            Console.WriteLine(new string('-', 40));
+
+            foreach (var spending in spendings)
+            {
+                Console.WriteLine($"Name: {spending.name}");
+                Console.WriteLine($"Amount: {spending.amountInHUF:C}");
+                Console.WriteLine($"Comment: {spending.comment}");
+                Console.WriteLine(new string('-', 40));
+            }
         }
 
         public static void Exit()

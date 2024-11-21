@@ -1,6 +1,6 @@
 ﻿using PQ7I00.API.Spendings;
 using PQ7I00.APP.Model.Spendings;
-using PQ7I00.APP.Service.Spendings;
+using PQ7I00.APP.Application.Spendings;
 using PQ7I00.Persistence;
 using PQ7I00.Repositories.Spendings;
 
@@ -21,7 +21,10 @@ namespace PQ7I00
                     await spendingController.AddSpendingAsync();
                     break;
                 case 2:
-                    // list by category
+                    var spendings = await spendingController.ListSpendingsByCategoryAsync();
+                    if (!spendings.Any()) ConsoleMenu.Exit();
+                    else ConsoleMenu.List(spendings);
+                    // ConsoleMenu again
                     break;
                 case 3:
                     // list by date
