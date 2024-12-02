@@ -4,7 +4,7 @@
 ## Get latest from `dotnet new gitignore`
 
 # json files
-DataFile/Spendings/
+PQ7I00/DataFiles/Spendings/
 
 # dotenv files
 .env
