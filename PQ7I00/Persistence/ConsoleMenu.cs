@@ -45,13 +45,14 @@ namespace PQ7I00.Persistence
             Console.WriteLine("1. Add a new spending");
             Console.WriteLine("2. List spendings by category");
             Console.WriteLine("3. List spendings by date");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("4. Refresh console (clear)");
+            Console.WriteLine("5. Exit");
 
             int selectedAction;
             while (true)
             {
                 Int32.TryParse(Console.ReadLine(), out selectedAction);
-                if (selectedAction >= 1 && selectedAction <= 4)
+                if (selectedAction >= 1 && selectedAction <= 5)
                     break;
 
                 Console.WriteLine("Invalid input. Please enter a correct action value.");
@@ -110,6 +111,11 @@ namespace PQ7I00.Persistence
                 "Enter a valid number: ",
                 input => (int.TryParse(input, out int result) && Enum.IsDefined(typeof(T), result), result),
                 "Invalid input. Please enter a valid number.");
+        }
+
+        public static void Refresh()
+        {
+            Console.Clear();
         }
 
         public static void Exit()

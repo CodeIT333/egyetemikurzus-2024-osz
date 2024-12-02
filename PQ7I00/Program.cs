@@ -16,8 +16,8 @@ namespace PQ7I00
             SpendingService spendingService = new SpendingService(spendingRepository);
             SpendingController spendingController = new SpendingController(spendingService);
 
-            bool running = true;
-            while (running)
+            bool run = true;
+            while (run)
             {
                 switch (ConsoleMenu.Menu())
                 {
@@ -26,21 +26,32 @@ namespace PQ7I00
                         await spendingController.AddSpendingAsync();
                         break;
                     case 2:
-                        var spendings = await spendingController.ListSpendingsByCategoryAsync();
-                        if (spendings.Any()) ConsoleMenu.List(spendings);
+                        // list by category
+                        var spendingsByCategory = await spendingController.ListSpendingsByCategoryAsync();
+                        if (!spendingsByCategory.Any()) ConsoleMenu.Refresh();
+                        else ConsoleMenu.List(spendingsByCategory);
                         break;
                     case 3:
                         // list by date
+                        var spendingsByDate = await spendingController.ListSpendingsByDateAsync();
+                        if (!spendingsByDate.Any()) ConsoleMenu.Refresh();
+                        else ConsoleMenu.List(spendingsByDate);
                         break;
                     case 4:
+                        // clear console
+                        ConsoleMenu.Refresh();
+                        break;
+                    case 5:
                         // exit
                         ConsoleMenu.Exit();
-                        running = false;
+                        run = false;
                         break;
                 }
+
+                if (run) ConsoleMenu.Menu();
             }
 
-
+            Console.ReadKey();
         }
 
     }

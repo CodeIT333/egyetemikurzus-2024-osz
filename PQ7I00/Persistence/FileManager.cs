@@ -1,4 +1,6 @@
-﻿using PQ7I00.APP.Model.Spendings;
+﻿using System.Text.Json;
+
+using PQ7I00.APP.Model.Spendings;
 using PQ7I00.Shared;
 
 namespace PQ7I00.Persistence
@@ -11,24 +13,47 @@ namespace PQ7I00.Persistence
         // Combine with the relative path to get the DataFiles/Spendings directory
         private static readonly string SpendingsDirectory = Path.Combine(ProjectRootDirectory, "DataFiles", "Spendings");
 
-        public static async Task<List<Spending>> ListByCategoryAsync(CostCategory costCategory)
+        private static async Task<List<Spending>> GetSpendingsAsync()
         {
             if (!Directory.Exists(SpendingsDirectory))
             {
-                return new();
+                return new List<Spending>();
             }
 
             var files = Directory.GetFiles(SpendingsDirectory, "*.json");
 
-            var tasks = files.Select(async file => System.Text.Json.JsonSerializer.Deserialize<Spending>(await File.ReadAllTextAsync(file)));
+            var tasks = files.Select(async file =>
+            {
+                var content = await File.ReadAllTextAsync(file);
+                return JsonSerializer.Deserialize<Spending>(content);
+            });
 
             var spendings = (await Task.WhenAll(tasks))
-                .Where(spending => spending.Category == costCategory)
-                .OrderBy(spending => spending.Date)
+                .Where(spending => spending != null)
                 .ToList();
 
             return spendings;
+        }
 
+        public static async Task<List<Spending>> ListByCategoryAsync(CostCategory costCategory)
+        {
+            var spendings = await GetSpendingsAsync();
+            return spendings.Where(spending => spending.Category == costCategory)
+                            .OrderByDescending(spending => spending.Date)
+                            .ToList();
+        }
+
+        public static async Task<List<Spending>> ListByDateAsync(int number, string measurement)
+        {
+            var spendings = await GetSpendingsAsync();
+
+            DateTime today = DateTime.UtcNow;
+            DateTime cutoffDate = measurement.Equals("d") ? today.AddDays(-number) : today.AddYears(-number);
+
+            return spendings
+                .Where(spending => spending.Date >= cutoffDate)
+                .OrderByDescending(spending => spending.Date)
+                .ToList();
         }
 
         public static async Task AddSpendingAsync(Spending spending)

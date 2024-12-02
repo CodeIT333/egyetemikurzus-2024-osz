@@ -34,8 +34,21 @@ namespace PQ7I00.APP.Application.Spendings
             return spendings == null ? new() : spendings;
         }
 
-        // list by date (week, mounth, 1 year, 5 years)
+        // list by date (days or years) -> only d = day, y = year
+        public async Task<List<SpendingDTO>> ListSpendingsByDateAsync(int number, string measurement)
+        {
+            var spendings = (await _spendingRepo.ListByDateAsync(number, measurement))
+                .Select(x => new SpendingDTO
+                {
+                    name = x.Name,
+                    amountInHUF = x.AmountInHUF,
+                    category = x.Category,
+                    comment = x.Comment,
+                })
+                .ToList();
 
+            return spendings == null ? new() : spendings;
+        }
 
         // find
 
