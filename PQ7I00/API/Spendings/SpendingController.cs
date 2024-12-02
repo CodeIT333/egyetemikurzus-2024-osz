@@ -1,6 +1,6 @@
-﻿using PQ7I00.APP.Model.Spendings;
+﻿using PQ7I00.APP.Application.Spendings;
 using PQ7I00.APP.Model.Spendings.DTOs;
-using PQ7I00.APP.Application.Spendings;
+using PQ7I00.Persistence;
 using PQ7I00.Shared;
 
 namespace PQ7I00.API.Spendings
@@ -16,79 +16,33 @@ namespace PQ7I00.API.Spendings
 
         public async Task<List<SpendingDTO>> ListSpendingsByCategoryAsync()
         {
-            Console.WriteLine("List spendings by category.");
+            ConsoleMenu.DisplayMessage("List spendings by category.");
 
-            Console.WriteLine("Select a category.");
-            foreach (var category in Enum.GetValues(typeof(CostCategory)))
-            {
-                Console.WriteLine($"{category}: {(int)category}");
-            }
-            CostCategory costCategory;
-            while (true)
-            {
-                if (int.TryParse(Console.ReadLine(), out int categoryValue) && Enum.IsDefined(typeof(CostCategory), categoryValue))
-                {
-                    costCategory = (CostCategory)categoryValue;
-                    break;
-                }
-
-                Console.WriteLine("Invalid input. Please select a valid category number.");
-            }
+            var costCategory = ConsoleMenu.ReadEnumInput<CostCategory>("Select a category:");
 
             var spendings = await _spendingService.ListSpendingsByCategoriesAsync(costCategory);
 
-            if (!spendings.Any()) Console.WriteLine("No Spendings yet.");
+            if (!spendings.Any()) ConsoleMenu.DisplayMessage("No spendings found for this category."); ;
 
             return spendings;
         }
 
         public async Task AddSpendingAsync()
         {
-            Console.WriteLine("Create a new spending.");
+            ConsoleMenu.DisplayMessage("Create a new spending.");
 
-            Console.Write("Spending name: ");
-            string name;
-            while (true)
-            {
-                name = Console.ReadLine() ?? string.Empty;
-                if (name.Length >= 3)
-                    break;
+            string name = ConsoleMenu.ReadValidatedInput(
+                "Spending name: ",
+                value => (value.Length >= 3, value),
+                "Invalid input. Please enter at least 3 characters.");
 
-                Console.WriteLine("Invalid input. Please enter minimum 3 character for the spending name.");
-            }
+            decimal amountInHUF = ConsoleMenu.ReadValidatedInput(
+                "Spending amount in HUF (10550.34): ",
+                value => (decimal.TryParse(value, out decimal result) && result > 0, result),
+                "Invalid input. Please enter a positive decimal value.");
 
-            Console.Write("Spending amount in HUF (10550.34): ");
-            decimal amountInHUF;
-            while (true)
-            {
-                if (decimal.TryParse(Console.ReadLine(), out amountInHUF) && amountInHUF > 0)
-                    break;
-
-                Console.WriteLine("Invalid input. Please enter a positive decimal value.");
-            }
-
-            Console.WriteLine("Select a category.");
-            foreach (var category in Enum.GetValues(typeof(CostCategory)))
-            {
-                Console.WriteLine($"{category}: {(int)category}");
-            }
-
-            Console.Write("Category number: ");
-            CostCategory costCategory;
-            while (true)
-            {
-                if (int.TryParse(Console.ReadLine(), out int categoryValue) && Enum.IsDefined(typeof(CostCategory), categoryValue))
-                {
-                    costCategory = (CostCategory)categoryValue;
-                    break;
-                }
-
-                Console.WriteLine("Invalid input. Please select a valid category number.");
-            }
-
-            Console.Write("Comment (optional): ");
-            string comment = Console.ReadLine() ?? string.Empty;
-
+            var costCategory = ConsoleMenu.ReadEnumInput<CostCategory>("Select a category:");
+            string comment = ConsoleMenu.ReadInput("Comment (optional): ");
 
             SpendingDTO dto = new()
             {
