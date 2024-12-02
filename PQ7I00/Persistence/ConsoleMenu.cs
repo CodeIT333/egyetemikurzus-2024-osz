@@ -3,39 +3,17 @@
 namespace PQ7I00.Persistence
 {
     public static class ConsoleMenu
-    {
-        // TODO: add | list by categories | list by date (week, mounth, 1 year, 5 years)
-        
+    {        
         public static void WaitingProgress()
         {
-            Console.WriteLine("Updating progress...");
+            Console.WriteLine("Loading...");
             for (int i = 0; i <= 100; i += 10)
             {
-                Console.SetCursorPosition(0, 1); // Move to the second line (row 1)
+                Console.SetCursorPosition(0, 1);
                 Console.Write($"Progress: {i}%");
-                Thread.Sleep(100); // Wait for 0.5 seconds
+                Thread.Sleep(100);
             }
             Console.Clear();
-        }
-
-        public static void ClearLastRows(int n)
-        {
-            if (n <= 0) return;
-
-            int currentLineCursor = Console.CursorTop;
-
-            for (int i = 0; i < n; i++)
-            {
-                // Move cursor up one line
-                if (currentLineCursor - i >= 0)
-                {
-                    Console.SetCursorPosition(0, currentLineCursor - i);
-                    Console.Write(new string(' ', Console.WindowWidth)); // Clear the line
-                }
-            }
-
-            // Move the cursor back to the original position
-            Console.SetCursorPosition(0, Math.Max(0, currentLineCursor - n));
         }
 
         public static int Menu()
@@ -74,6 +52,14 @@ namespace PQ7I00.Persistence
             }
         }
 
+        public static void Sum(List<SpendingDTO> spendings)
+        {
+            Console.WriteLine(new string('-', 40));
+            Console.WriteLine($"Summary: {spendings.Sum(x => x.amountInHUF)}");
+            Console.WriteLine(new string('-', 40));
+            Console.WriteLine(new string('-', 40));
+        }
+
         public static void DisplayMessage(string message)
         {
             Console.WriteLine(message);
@@ -99,12 +85,17 @@ namespace PQ7I00.Persistence
             }
         }
 
-        public static T ReadEnumInput<T>(string prompt) where T : Enum
+        public static T ReadEnumInput<T>(string prompt, bool canAcceptInvalidInput = false) where T : Enum
         {
-            DisplayMessage(prompt);
+            Console.WriteLine(prompt);
             foreach (var type in Enum.GetValues(typeof(T)))
             {
-                DisplayMessage($"{type}: {(int)type}");
+                Console.WriteLine($"{type}: {(int)type}");
+            }
+
+            if (canAcceptInvalidInput)
+            {
+                //TODO int input = int.TryParse(Console.ReadLine());
             }
 
             return (T)(object)ReadValidatedInput(

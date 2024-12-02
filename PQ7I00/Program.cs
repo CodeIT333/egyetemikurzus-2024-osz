@@ -24,18 +24,27 @@ namespace PQ7I00
                     case 1:
                         // add new
                         await spendingController.AddSpendingAsync();
+                        ConsoleMenu.Refresh();
                         break;
                     case 2:
                         // list by category
                         var spendingsByCategory = await spendingController.ListSpendingsByCategoryAsync();
-                        if (!spendingsByCategory.Any()) ConsoleMenu.Refresh();
-                        else ConsoleMenu.List(spendingsByCategory);
+                        //if (!spendingsByCategory.Any()) ConsoleMenu.Refresh();
+                        //else
+                        //{
+                        //    ConsoleMenu.List(spendingsByCategory);
+                        //    ConsoleMenu.Sum(spendingsByCategory);
+                        //}
+                        ConsoleMenu.List(spendingsByCategory);
+                        ConsoleMenu.Sum(spendingsByCategory);
                         break;
                     case 3:
                         // list by date
                         var spendingsByDate = await spendingController.ListSpendingsByDateAsync();
-                        if (!spendingsByDate.Any()) ConsoleMenu.Refresh();
-                        else ConsoleMenu.List(spendingsByDate);
+                        //if (!spendingsByDate.Any()) ConsoleMenu.Refresh();
+                        //else ConsoleMenu.List(spendingsByDate);
+                        ConsoleMenu.List(spendingsByDate);
+                        ConsoleMenu.Sum(spendingsByDate);
                         break;
                     case 4:
                         // clear console
@@ -48,7 +57,6 @@ namespace PQ7I00
                         break;
                 }
 
-                if (run) ConsoleMenu.Menu();
             }
 
             Console.ReadKey();

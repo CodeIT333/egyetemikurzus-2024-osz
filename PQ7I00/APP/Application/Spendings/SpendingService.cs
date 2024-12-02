@@ -50,10 +50,6 @@ namespace PQ7I00.APP.Application.Spendings
             return spendings == null ? new() : spendings;
         }
 
-        // find
-
-
-
         // create
         public async Task AddSpendingAsync(SpendingDTO dto)
         {
@@ -61,8 +57,6 @@ namespace PQ7I00.APP.Application.Spendings
 
             await _spendingRepo.AddAsync(spending);
         }
-
-
 
     }
 }
