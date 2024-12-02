@@ -5,6 +5,7 @@ namespace PQ7I00.APP.Model.Spendings
     public interface ISpendingRepository
     {
         Task<List<Spending>> ListByCategoryAsync(CostCategory costCategory);
+        Task<List<Spending>> ListByDateAsync(int number, string measurement);
         Task AddAsync(Spending spending);
     }
 }

@@ -14,27 +14,42 @@ namespace PQ7I00
             SpendingService spendingService = new SpendingService(spendingRepository);
             SpendingController spendingController = new SpendingController(spendingService);
 
-            switch (ConsoleMenu.Menu())
+            bool run = true;
+            while (run)
             {
-                case 1:
-                    // add new
-                    await spendingController.AddSpendingAsync();
-                    break;
-                case 2:
-                    var spendings = await spendingController.ListSpendingsByCategoryAsync();
-                    if (!spendings.Any()) ConsoleMenu.Exit();
-                    else ConsoleMenu.List(spendings);
-                    // ConsoleMenu again
-                    break;
-                case 3:
-                    // list by date
-                    break;
-                case 4:
-                    // exit
-                    ConsoleMenu.Exit();
-                    break;
+                switch (ConsoleMenu.Menu())
+                {
+                    case 1:
+                        // add new
+                        await spendingController.AddSpendingAsync();
+                        break;
+                    case 2:
+                        // list by category
+                        var spendingsByCategory = await spendingController.ListSpendingsByCategoryAsync();
+                        if (!spendingsByCategory.Any()) ConsoleMenu.Refresh();
+                        else ConsoleMenu.List(spendingsByCategory);
+                        break;
+                    case 3:
+                        // list by date
+                        var spendingsByDate = await spendingController.ListSpendingsByDateAsync();
+                        if (!spendingsByDate.Any()) ConsoleMenu.Refresh();
+                        else ConsoleMenu.List(spendingsByDate);
+                        break;
+                    case 4:
+                        // clear console
+                        ConsoleMenu.Refresh();
+                        break;
+                    case 5:
+                        // exit
+                        ConsoleMenu.Exit();
+                        run = false;
+                        break;
+                }
+
+                if (run) ConsoleMenu.Menu();
             }
 
+            Console.ReadKey();
         }
 
     }

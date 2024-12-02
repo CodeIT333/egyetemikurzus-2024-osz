@@ -1,6 +1,5 @@
-﻿using PQ7I00.APP.Model.Spendings;
+﻿using PQ7I00.APP.Application.Spendings;
 using PQ7I00.APP.Model.Spendings.DTOs;
-using PQ7I00.APP.Application.Spendings;
 using PQ7I00.Shared;
 
 namespace PQ7I00.API.Spendings
@@ -36,6 +35,38 @@ namespace PQ7I00.API.Spendings
             }
 
             var spendings = await _spendingService.ListSpendingsByCategoriesAsync(costCategory);
+
+            if (!spendings.Any()) Console.WriteLine("No Spendings yet.");
+
+            return spendings;
+        }
+
+        public async Task<List<SpendingDTO>> ListSpendingsByDateAsync()
+        {
+            Console.WriteLine("List spendings by date.");
+  
+            Console.WriteLine("Select to list spendings by date in days (d) or in years (y).");
+            string measurement;
+            while (true)
+            {
+                measurement = Console.ReadLine().ToLower();
+                if (measurement.Equals("d") || measurement.Equals("y"))
+                    break;
+
+                Console.WriteLine("Invalid input. Please enter a 'd' or 'y' character.");
+            }
+
+            Console.WriteLine("Add how many days or years of spendings you want to list.");
+            int number;
+            while (true)
+            {
+                if (int.TryParse(Console.ReadLine(), out number) && number > 0)
+                    break;
+
+                Console.WriteLine("Invalid input. Please enter a positive number.");
+            }
+
+            var spendings = await _spendingService.ListSpendingsByDateAsync(number, measurement);
 
             if (!spendings.Any()) Console.WriteLine("No Spendings yet.");
 
