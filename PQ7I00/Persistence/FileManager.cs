@@ -23,8 +23,21 @@ namespace PQ7I00.Persistence
 
             var tasks = files.Select(async file =>
             {
-                var content = await File.ReadAllTextAsync(file);
-                return JsonSerializer.Deserialize<Spending>(content);
+                try
+                {
+                    var content = await File.ReadAllTextAsync(file);
+                    return JsonSerializer.Deserialize<Spending>(content);
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine($"Error reading file {file}: {e.Message}");
+                    return null;
+                }
+                catch (JsonException e)
+                {
+                    Console.WriteLine($"Error deserializing file {file}: {e.Message}");
+                    return null;
+                }
             });
 
             var spendings = (await Task.WhenAll(tasks))
@@ -75,15 +88,22 @@ namespace PQ7I00.Persistence
                 Directory.CreateDirectory(SpendingsDirectory);
             }
 
-            string fileName = $"{spending.Id}.json";
-            string filePath = Path.Combine(SpendingsDirectory, fileName);
-
-            string jsonData = JsonSerializer.Serialize(spending, new JsonSerializerOptions
+            try
             {
-                WriteIndented = true
-            });
+                string fileName = $"{spending.Id}.json";
+                string filePath = Path.Combine(SpendingsDirectory, fileName);
 
-            await File.WriteAllTextAsync(filePath, jsonData);
+                string jsonData = JsonSerializer.Serialize(spending, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                await File.WriteAllTextAsync(filePath, jsonData);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine($"Error writing to file: {e.Message}");
+            }
         }
     }
 }

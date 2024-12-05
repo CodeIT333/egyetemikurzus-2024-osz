@@ -127,7 +127,7 @@ namespace PQ7I00.Persistence
             Console.WriteLine("List all: 0 or Enter");
             foreach (var type in Enum.GetValues(typeof(T)))
             {
-                Console.WriteLine($"{type}: {(int)type}");
+                Console.WriteLine($"{(int)type}. {type}");
             }
 
             return ReadValidatedInput(
