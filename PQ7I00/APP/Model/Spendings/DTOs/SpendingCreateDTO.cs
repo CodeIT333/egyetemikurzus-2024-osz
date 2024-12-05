@@ -2,7 +2,7 @@
 
 namespace PQ7I00.APP.Model.Spendings.DTOs
 {
-    public class SpendingDTO
+    public class SpendingCreateDTO
     {
         public string name { get; set; }
         public decimal amountInHUF { get; set; }

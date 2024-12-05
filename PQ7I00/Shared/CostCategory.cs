@@ -2,7 +2,7 @@
 {
     public enum CostCategory
     {
-        Other = 0,
+        Other = 1,
         FoodAndDrink,
         Transportation,
         Housing,

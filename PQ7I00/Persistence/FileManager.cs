@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-
 using PQ7I00.APP.Model.Spendings;
 using PQ7I00.Shared;
 
@@ -35,20 +34,33 @@ namespace PQ7I00.Persistence
             return spendings;
         }
 
-        public static async Task<List<Spending>> ListByCategoryAsync(CostCategory costCategory)
+        public static async Task<List<Spending>> ListByCategoryAsync(CostCategory? costCategory)
         {
             var spendings = await GetSpendingsAsync();
-            return spendings.Where(spending => spending.Category == costCategory)
+            return spendings.Where(spending => costCategory.HasValue ? spending.Category == costCategory : true)
                             .OrderByDescending(spending => spending.Date)
                             .ToList();
         }
 
-        public static async Task<List<Spending>> ListByDateAsync(int number, string measurement)
+        public static async Task<List<Spending>> ListByDateAsync(int number, DateFilter? dateFilter)
         {
             var spendings = await GetSpendingsAsync();
 
             DateTime today = DateTime.UtcNow;
-            DateTime cutoffDate = measurement.Equals("d") ? today.AddDays(-number) : today.AddYears(-number);
+            DateTime cutoffDate;
+            switch (dateFilter) {
+                case DateFilter.Days:
+                    cutoffDate = today.AddDays(-number);
+                    break;
+                case DateFilter.Years:
+                    cutoffDate = today.AddYears(-number);
+                    break;
+                /* Add new if needed */
+                default:
+                    // if null list all
+                    cutoffDate = DateTime.MinValue;
+                    break;
+            }
 
             return spendings
                 .Where(spending => spending.Date >= cutoffDate)
@@ -66,7 +78,7 @@ namespace PQ7I00.Persistence
             string fileName = $"{spending.Id}.json";
             string filePath = Path.Combine(SpendingsDirectory, fileName);
 
-            string jsonData = System.Text.Json.JsonSerializer.Serialize(spending, new System.Text.Json.JsonSerializerOptions
+            string jsonData = JsonSerializer.Serialize(spending, new JsonSerializerOptions
             {
                 WriteIndented = true
             });

@@ -19,31 +19,33 @@ namespace PQ7I00.APP.Application.Spendings
 
 
         // list by categories
-        public async Task<List<SpendingDTO>> ListSpendingsByCategoriesAsync(CostCategory costCategory)
+        public async Task<List<SpendingListDTO>> ListSpendingsByCategoriesAsync(CostCategory? costCategory)
         {
             var spendings = (await _spendingRepo.ListByCategoryAsync(costCategory))
-                .Select(x => new SpendingDTO
+                .Select(x => new SpendingListDTO
                 {
                     name = x.Name,
                     amountInHUF = x.AmountInHUF,
                     category = x.Category,
                     comment = x.Comment,
+                    date = x.Date
                 })
                 .ToList();
 
             return spendings == null ? new() : spendings;
         }
 
-        // list by date (days or years) -> only d = day, y = year
-        public async Task<List<SpendingDTO>> ListSpendingsByDateAsync(int number, string measurement)
+        // list by date (days or years)
+        public async Task<List<SpendingListDTO>> ListSpendingsByDateAsync(int number, DateFilter? dateFilter)
         {
-            var spendings = (await _spendingRepo.ListByDateAsync(number, measurement))
-                .Select(x => new SpendingDTO
+            var spendings = (await _spendingRepo.ListByDateAsync(number, dateFilter))
+                .Select(x => new SpendingListDTO
                 {
                     name = x.Name,
                     amountInHUF = x.AmountInHUF,
                     category = x.Category,
                     comment = x.Comment,
+                    date = x.Date
                 })
                 .ToList();
 
@@ -51,7 +53,7 @@ namespace PQ7I00.APP.Application.Spendings
         }
 
         // create
-        public async Task AddSpendingAsync(SpendingDTO dto)
+        public async Task AddSpendingAsync(SpendingCreateDTO dto)
         {
             var spending = Spending.Create(dto.name, dto.amountInHUF, dto.category, dto.comment);
 

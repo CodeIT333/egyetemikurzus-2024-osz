@@ -10,7 +10,7 @@ namespace PQ7I00
     {
         static async Task Main(string[] args)
         {
-            ConsoleMenu.WaitingProgress();
+            ConsoleManager.WaitingProgress();
 
             ISpendingRepository spendingRepository = new SpendingRepository();
             SpendingService spendingService = new SpendingService(spendingRepository);
@@ -19,47 +19,42 @@ namespace PQ7I00
             bool run = true;
             while (run)
             {
-                switch (ConsoleMenu.Menu())
+                switch (ConsoleManager.Menu())
                 {
                     case 1:
                         // add new
                         await spendingController.AddSpendingAsync();
-                        ConsoleMenu.Refresh();
+                        ConsoleManager.Refresh();
                         break;
                     case 2:
                         // list by category
                         var spendingsByCategory = await spendingController.ListSpendingsByCategoryAsync();
-                        //if (!spendingsByCategory.Any()) ConsoleMenu.Refresh();
-                        //else
-                        //{
-                        //    ConsoleMenu.List(spendingsByCategory);
-                        //    ConsoleMenu.Sum(spendingsByCategory);
-                        //}
-                        ConsoleMenu.List(spendingsByCategory);
-                        ConsoleMenu.Sum(spendingsByCategory);
+                        ConsoleManager.ListByCategoryTitle(spendingsByCategory.costCategory);
+                        ConsoleManager.List(spendingsByCategory.spendings);
+                        ConsoleManager.Sum(spendingsByCategory.spendings);
+                        ConsoleManager.WaitForRefresh();
                         break;
                     case 3:
                         // list by date
                         var spendingsByDate = await spendingController.ListSpendingsByDateAsync();
-                        //if (!spendingsByDate.Any()) ConsoleMenu.Refresh();
-                        //else ConsoleMenu.List(spendingsByDate);
-                        ConsoleMenu.List(spendingsByDate);
-                        ConsoleMenu.Sum(spendingsByDate);
+                        ConsoleManager.ListByDateTitle(spendingsByDate.dateFilter, spendingsByDate.number);
+                        ConsoleManager.List(spendingsByDate.spendings);
+                        ConsoleManager.Sum(spendingsByDate.spendings);
+                        ConsoleManager.WaitForRefresh();
                         break;
                     case 4:
                         // clear console
-                        ConsoleMenu.Refresh();
+                        ConsoleManager.Refresh();
                         break;
                     case 5:
                         // exit
-                        ConsoleMenu.Exit();
+                        ConsoleManager.Exit();
                         run = false;
                         break;
                 }
 
             }
 
-            Console.ReadKey();
         }
 
     }

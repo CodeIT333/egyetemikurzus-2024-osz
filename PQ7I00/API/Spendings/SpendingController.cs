@@ -14,62 +14,70 @@ namespace PQ7I00.API.Spendings
             _spendingService = spendingService;
         }
 
-        public async Task<List<SpendingDTO>> ListSpendingsByCategoryAsync()
+        public async Task<SpendingListByCategoryDTO> ListSpendingsByCategoryAsync()
         {
-            ConsoleMenu.DisplayMessage("List spendings by category.");
+            ConsoleManager.DisplayMessage("List spendings by category.");
 
-            var costCategory = ConsoleMenu.ReadEnumInput<CostCategory>("Select a category:");
+            var costCategory = ConsoleManager.ReadEnumInput<CostCategory>("Select a category:");
 
             var spendings = await _spendingService.ListSpendingsByCategoriesAsync(costCategory);
 
-            if (!spendings.Any()) ConsoleMenu.DisplayMessage("No spendings found in this category.");
+            if (!spendings.Any())
+                ConsoleManager.DisplayMessage(costCategory.HasValue ? "No spendings found in this category." : "No spendings found.");
 
-            return spendings;
+            return new()
+            {
+                costCategory = costCategory,
+                spendings = spendings
+            };
         }
 
-        public async Task<List<SpendingDTO>> ListSpendingsByDateAsync()
+        public async Task<SpendingListByDateDTO> ListSpendingsByDateAsync()
         {
-            ConsoleMenu.DisplayMessage("List spendings by date.");
+            ConsoleManager.DisplayMessage("List spendings by date.");
+            var dateFilter = ConsoleManager.ReadEnumInput<DateFilter>("Select to list spendings by:");
 
-            string measurement = ConsoleMenu.ReadValidatedInput(
-                "Select to list spendings by date in days (d) or in years (y).",
-                value => (value.ToLower().Equals("d") || value.ToLower().Equals("y"), value),
-                "Invalid input. Please enter a 'd' or 'y' character.");
+            int number = dateFilter.HasValue ?
+                ConsoleManager.ReadValidatedInput(
+                    $"Add how many {dateFilter.Value.ToString().ToLower()} of spendings you want to list.",
+                    value => (int.TryParse(value, out int result) && result > 0, result),
+                    "Invalid input. Please enter a positive number.") :
+                0;
 
-            int number = ConsoleMenu.ReadValidatedInput(
-                "Add how many days or years of spendings you want to list.",
-                value => (int.TryParse(value, out int result) && result > 0, result),
-                "Invalid input. Please enter a positive number.");
+            var spendings = await _spendingService.ListSpendingsByDateAsync(number, dateFilter);
 
-            var spendings = await _spendingService.ListSpendingsByDateAsync(number, measurement);
+            if (!spendings.Any()) ConsoleManager.DisplayMessage("No spendings found in this interval.");
 
-            if (!spendings.Any()) ConsoleMenu.DisplayMessage("No spendings found in this interval.");
-
-            return spendings;
+            return new()
+            {
+                dateFilter = dateFilter,
+                number = number,
+                spendings = spendings
+            };
         }
 
         public async Task AddSpendingAsync()
         {
-            ConsoleMenu.DisplayMessage("Create a new spending.");
+            ConsoleManager.DisplayMessage("Create a new spending.");
 
-            string name = ConsoleMenu.ReadValidatedInput(
+            string name = ConsoleManager.ReadValidatedInput(
                 "Spending name: ",
                 value => (value.Length >= 3, value),
                 "Invalid input. Please enter at least 3 characters.");
 
-            decimal amountInHUF = ConsoleMenu.ReadValidatedInput(
+            decimal amountInHUF = ConsoleManager.ReadValidatedInput(
                 "Spending amount in HUF (10550.34): ",
                 value => (decimal.TryParse(value, out decimal result) && result > 0, result),
                 "Invalid input. Please enter a positive decimal value.");
 
-            var costCategory = ConsoleMenu.ReadEnumInput<CostCategory>("Select a category:");
-            string comment = ConsoleMenu.ReadInput("Comment (optional): ");
+            var costCategory = ConsoleManager.ReadEnumInput<CostCategory>("Select a category:");
+            string comment = ConsoleManager.ReadInput("Comment (optional): ");
 
-            SpendingDTO dto = new()
+            SpendingCreateDTO dto = new()
             {
                 name = name,
                 amountInHUF = amountInHUF,
-                category = costCategory,
+                category = costCategory ?? CostCategory.Other,
                 comment = comment
             };
 
