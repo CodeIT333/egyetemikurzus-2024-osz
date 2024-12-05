@@ -4,7 +4,6 @@ using PQ7I00.Shared;
 
 namespace PQ7I00.APP.Application.Spendings
 {
-    // TODO: client can cancel the methods
     public class SpendingService
     {
         private readonly ISpendingRepository _spendingRepo;
